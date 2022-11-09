@@ -31,7 +31,7 @@ is optimized for real symmetric or complex hermitian linear maps.
 """
 mutable struct ArnoldiFactorization{T,S} <: KrylovFactorization{T,S}
     k::Int # current Krylov dimension
-    V::OrthonormalBasis{T} # basis of length k
+    V::Union{OrthonormalBasis{T}, ApproximateOrthonormalBasis{T,S}} # basis of length k
     H::Vector{S} # stores the Hessenberg matrix in packed form
     r::T # residual
 end
@@ -151,13 +151,13 @@ function initialize(iter::ArnoldiIterator; verbosity::Int = 0)
     βold = norm(r)
     r = axpy!(-α, v, r)
     β = norm(r)
-    # possibly reorthogonalize
-    if iter.orth isa Union{ClassicalGramSchmidt2,ModifiedGramSchmidt2}
+    # possibly reorthogonalize 
+    if iter.orth isa Union{ClassicalGramSchmidt2,ModifiedGramSchmidt2, CompensatedGramSchmidt2}
         dα = dot(v, r)
         α += dα
         r = axpy!(-dα, v, r)
         β = norm(r)
-    elseif iter.orth isa Union{ClassicalGramSchmidtIR,ModifiedGramSchmidtIR}
+    elseif iter.orth isa Union{ClassicalGramSchmidtIR,ModifiedGramSchmidtIR,CompensatedGramSchmidtIR}
         while eps(one(β)) < β < iter.orth.η * βold
             βold = β
             dα = dot(v, r)
@@ -166,7 +166,11 @@ function initialize(iter::ArnoldiIterator; verbosity::Int = 0)
             β = norm(r)
         end
     end
-    V = OrthonormalBasis([v])
+    if iter.orth isa Union{CompensatedGramSchmidt,CompensatedGramSchmidt2,CompensatedGramSchmidtIR}
+        V= ApproximateOrthonormalBasis([v],ones(T,1,1))
+    else
+        V = OrthonormalBasis([v])
+    end
     H = T[α, β]
     if verbosity > 0
         @info "Arnoldi iteration step 1: normres = $β"
@@ -228,7 +232,7 @@ end
 # Arnoldi recurrence: simply use provided orthonormalization routines
 function arnoldirecurrence!(
     operator,
-    V::OrthonormalBasis,
+    V::Union{OrthonormalBasis,ApproximateOrthonormalBasis},
     h::AbstractVector,
     orth::Orthogonalizer
 )

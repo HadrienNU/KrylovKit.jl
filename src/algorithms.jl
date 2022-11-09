@@ -35,6 +35,14 @@ large Krylov dimension.
 """
 struct ModifiedGramSchmidt <: Orthogonalizer end
 
+"""
+    CompensatedGramSchmidt()
+
+Represents the compensated Gram Schmidt algorithm for inexact orthogonalizing different vectors,
+typically not an optimal choice.
+"""
+struct CompensatedGramSchmidt <: Orthogonalizer end
+
 # A single reorthogonalization always
 """
     ClassicalGramSchmidt2()
@@ -51,6 +59,14 @@ Represents the modified Gram Schmidt algorithm with a second reorthogonalization
 always taking place.
 """
 struct ModifiedGramSchmidt2 <: Reorthogonalizer end
+
+"""
+    CompensatedGramSchmidt2()
+
+Represents the compensated Gram Schmidt algorithm for inexact orthogonalizing different vectors,
+with a second reorthogonalization step always taking place.
+"""
+struct CompensatedGramSchmidt <: Reorthogonalizer end
 
 # Iterative reorthogonalization
 """
@@ -78,6 +94,19 @@ struct ModifiedGramSchmidtIR{S<:Real} <: Reorthogonalizer
     η::S
 end
 ModifiedGramSchmidtIR() = ModifiedGramSchmidtIR(1 / sqrt(2)) # Daniel-Gragg-Kaufman-Stewart
+
+"""
+    CompensatedGramSchmidtIR(η::Real = 1/sqrt(2))
+
+Represents the compensated Gram Schmidt algorithm with iterative (i.e. zero or more)
+reorthogonalization until the norm of the vector after an orthogonalization step has not
+decreased by a factor smaller than `η` with respect to the norm before the step. The
+default value corresponds to the Daniel-Gragg-Kaufman-Stewart condition.
+"""
+struct CompensatedGramSchmidtIR{S<:Real} <: Reorthogonalizer
+    η::S
+end
+CompensatedGramSchmidtIR() = CompensatedGramSchmidtIR(1 / sqrt(2)) # Daniel-Gragg-Kaufman-Stewart
 
 # Solving eigenvalue problems
 abstract type KrylovAlgorithm end

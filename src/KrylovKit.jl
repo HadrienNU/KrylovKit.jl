@@ -33,6 +33,7 @@ export basis, rayleighquotient, residual, normres, rayleighextension
 export initialize, initialize!, expand!, shrink!
 export ClassicalGramSchmidt, ClassicalGramSchmidt2, ClassicalGramSchmidtIR
 export ModifiedGramSchmidt, ModifiedGramSchmidt2, ModifiedGramSchmidtIR
+export CompensatedGramSchmidt, CompensatedGramSchmidt2, CompensatedGramSchmidtIR
 export LanczosIterator, ArnoldiIterator, GKLIterator
 export CG, GMRES, BiCGStab, Lanczos, Arnoldi, GKL, GolubYe
 export KrylovDefaults, EigSorter
@@ -118,6 +119,7 @@ See [`OrthonormalBasis`](@ref) for a specific implementation.
 abstract type Basis{T} end
 
 include("orthonormal.jl")
+include("approximateorthonormal.jl")
 
 # Dense linear algebra structures and functions used in the algorithms below
 include("dense/givens.jl")

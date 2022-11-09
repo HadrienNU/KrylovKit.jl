@@ -498,7 +498,7 @@ orthogonalize!(v::T, q::T, alg::Orthogonalizer) where {T} = _orthogonalize!(v, q
 function _orthogonalize!(
     v::T,
     q::T,
-    alg::Union{ClassicalGramSchmidt,ModifiedGramSchmidt}
+    alg::Union{ClassicalGramSchmidt,ModifiedGramSchmidt,CompensatedGramSchmidt}
 ) where {T}
     s = dot(q, v)
     v = axpy!(-s, q, v)
@@ -507,7 +507,7 @@ end
 function _orthogonalize!(
     v::T,
     q::T,
-    alg::Union{ClassicalGramSchmidt2,ModifiedGramSchmidt2}
+    alg::Union{ClassicalGramSchmidt2,ModifiedGramSchmidt2,CompensatedGramSchmidt2}
 ) where {T}
     s = dot(q, v)
     v = axpy!(-s, q, v)
@@ -518,7 +518,7 @@ end
 function _orthogonalize!(
     v::T,
     q::T,
-    alg::Union{ClassicalGramSchmidtIR,ModifiedGramSchmidtIR}
+    alg::Union{ClassicalGramSchmidtIR,ModifiedGramSchmidtIR,CompensatedGramSchmidtIR}
 ) where {T}
     nold = norm(v)
     s = dot(q, v)
