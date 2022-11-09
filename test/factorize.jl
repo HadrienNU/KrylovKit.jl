@@ -130,3 +130,43 @@ end
         end
     end
 end
+
+
+
+# Test incomplete Arnoldi factorization
+@testset "Inexact Arnoldi factorization" begin
+    @testset for T in (Float32, Float64, ComplexF32, ComplexF64, Complex{Int})
+        @testset for orth in (cpgs, cpgs2, cpgsr)
+            if T == Complex{Int}
+                A = rand(-100:100, (N, N)) + im * rand(-100:100, (N, N))
+                v = rand(-100:100, (N,))
+            else
+                A = rand(T,(N,N))
+                v = rand(T,(N,))
+            end
+            iter = @constinferred ArnoldiIterator(wrapop(A), wrapvec(v), orth)
+            krylovdim = 3*n
+            fact = @constinferred initialize(iter)
+            while normres(fact) > eps(float(real(T))) && length(fact) < krylovdim
+                @constinferred expand!(iter, fact)
+
+                Ṽ, H, r̃, β, e = fact
+                V = hcat(unwrapvec.(Ṽ)...)
+                r = unwrapvec(r̃)
+                @test V'*V ≈ I
+                @test norm(r) ≈ β
+                @test A*V ≈ V*H + r*e'
+            end
+
+            fact = @constinferred shrink!(fact, div(n,2))
+            V = hcat(unwrapvec.(@constinferred basis(fact))...)
+            H = @constinferred rayleighquotient(fact)
+            r = unwrapvec(@constinferred residual(fact))
+            β = @constinferred normres(fact)
+            e = @constinferred rayleighextension(fact)
+            @test V'*V ≈ I
+            @test norm(r) ≈ β
+            @test A*V ≈ V*H + r*e'
+        end
+    end
+end

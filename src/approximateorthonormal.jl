@@ -23,7 +23,7 @@ Finally, a linear combination of the vectors in `b::ApproximateOrthonormalBasis`
 multiplying `b` with a `Vector{<:Number}` using `*` or `mul!` (if the output vector is
 already allocated).
 """
-struct ApproximateOrthonormalBasis{T,S<:Real} <: Basis{T} # TODO: mutable or not ?
+mutable struct ApproximateOrthonormalBasis{T,S<:Number} <: Basis{T} # TODO: mutable or not ?
     basis::OrthonormalBasis{T}
     gram::Matrix{S} # The Gram matrix of the basis
 end
@@ -45,7 +45,7 @@ Base.IteratorSize(::Type{<:ApproximateOrthonormalBasis}) = Base.HasLength()
 Base.IteratorEltype(::Type{<:ApproximateOrthonormalBasis}) = Base.HasEltype()
 
 Base.length(b::ApproximateOrthonormalBasis) = length(b.basis)
-Base.eltype(b::ApproximateOrthonormalBasis{T,S}) where {T} = T
+Base.eltype(b::ApproximateOrthonormalBasis{T,S}) where {T,S} = T
 
 Base.iterate(b::ApproximateOrthonormalBasis) = Base.iterate(b.basis)
 Base.iterate(b::ApproximateOrthonormalBasis, state) = Base.iterate(b.basis, state)
@@ -69,11 +69,11 @@ Base.pop!(b::ApproximateOrthonormalBasis) = pop!(b.basis)
 function Base.push!(b::ApproximateOrthonormalBasis{T}, q::T) where {T}
     n = length(b)+1
     # Extend gram matrix
-    if n > b.gram.size[1]
+    if n > size(b.gram)[1]
         allocateMatrix(b,n)
     end
     # Compute scalar product of the new element with other element of the basis
-    for i, bi in enumerate(b.basis)
+    for (i, bi) in enumerate(b.basis)
         b.gram[i,n] = dot(bi,q)
         b.gram[n,i] = b.gram[i,n]
     end
@@ -116,8 +116,8 @@ function project!(
     β::Number = false,
     r = Base.OneTo(length(b))
 )
-    project!(y,b,x,α,β,r)
-    y = (y \ view(b.gram,1:length(b),1:length(b)))'
+    project!(y,b.basis,x,α,β,r)
+    y = view(b.gram,1:length(b),1:length(b)) \ y
     return y
 end
 
@@ -163,6 +163,7 @@ the subspace spanned by these basis vectors is exactly the same.
 function basistransform!(b::ApproximateOrthonormalBasis{T}, U::AbstractMatrix) where {T} # U should be unitary or isometric
     #TODO : Transform Gram Matrix
     #U*gram*UT
+    b.gram = U'*b.gram*U
     #Transform basis
     basistransform!(b.basis, U)
     return b

@@ -16,10 +16,13 @@ module PureVecs
     const η₀   = 0.75 # seems to be necessary to get sufficient convergence for GKL iteration with Float32 precision
     const cgs = ClassicalGramSchmidt()
     const mgs = ModifiedGramSchmidt()
+    const cpgs = CompensatedGramSchmidt()
     const cgs2 = ClassicalGramSchmidt2()
     const mgs2 = ModifiedGramSchmidt2()
+    const cpgs2 = CompensatedGramSchmidt2()
     const cgsr = ClassicalGramSchmidtIR(η₀)
     const mgsr = ModifiedGramSchmidtIR(η₀)
+    const cpgsr = CompensatedGramSchmidtIR(η₀)
 
     wrapvec(v) = v
     unwrapvec(v) = v
@@ -55,10 +58,13 @@ module MinimalVecs
     const η₀   = 0.75 # seems to be necessary to get sufficient convergence for GKL iteration with Float32 precision
     const cgs = ClassicalGramSchmidt()
     const mgs = ModifiedGramSchmidt()
+    const cpgs = CompensatedGramSchmidt()
     const cgs2 = ClassicalGramSchmidt2()
     const mgs2 = ModifiedGramSchmidt2()
+    const cpgs2 = CompensatedGramSchmidt2()
     const cgsr = ClassicalGramSchmidtIR(η₀)
     const mgsr = ModifiedGramSchmidtIR(η₀)
+    const cpgsr = CompensatedGramSchmidtIR(η₀)
 
     include("minimalvec.jl")
 
@@ -102,10 +108,13 @@ module MixedSVD
     const η₀   = 0.75 # seems to be necessary to get sufficient convergence for GKL iteration with Float32 precision
     const cgs = ClassicalGramSchmidt()
     const mgs = ModifiedGramSchmidt()
+    const cpgs = CompensatedGramSchmidt()
     const cgs2 = ClassicalGramSchmidt2()
     const mgs2 = ModifiedGramSchmidt2()
+    const cpgs2 = CompensatedGramSchmidt2()
     const cgsr = ClassicalGramSchmidtIR(η₀)
     const mgsr = ModifiedGramSchmidtIR(η₀)
+    const cpgsr = CompensatedGramSchmidtIR(η₀)
 
     include("minimalvec.jl")
 
@@ -138,10 +147,13 @@ module ExtrasTest
     const η₀   = 0.75 # seems to be necessary to get sufficient convergence for GKL iteration with Float32 precision
     const cgs = ClassicalGramSchmidt()
     const mgs = ModifiedGramSchmidt()
+    const cpgs = CompensatedGramSchmidt()
     const cgs2 = ClassicalGramSchmidt2()
     const mgs2 = ModifiedGramSchmidt2()
+    const cpgs2 = CompensatedGramSchmidt2()
     const cgsr = ClassicalGramSchmidtIR(η₀)
     const mgsr = ModifiedGramSchmidtIR(η₀)
+    const cpgsr = CompensatedGramSchmidtIR(η₀)
 
     include("linalg.jl")
     include("recursivevec.jl")

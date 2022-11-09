@@ -29,9 +29,9 @@ Arnoldi factorizations of a given linear map and a starting vector. See
 [`LanczosFactorization`](@ref) and [`LanczosIterator`](@ref) for a Krylov factorization that
 is optimized for real symmetric or complex hermitian linear maps.
 """
-mutable struct ArnoldiFactorization{T,S} <: KrylovFactorization{T,S}
+mutable struct ArnoldiFactorization{T,S, B <:Basis{T} } <: KrylovFactorization{T,S}
     k::Int # current Krylov dimension
-    V::Union{OrthonormalBasis{T}, ApproximateOrthonormalBasis{T,S}} # basis of length k
+    V::B #Union{OrthonormalBasis{T}, ApproximateOrthonormalBasis{T,S}} # basis of length k
     H::Vector{S} # stores the Hessenberg matrix in packed form
     r::T # residual
 end
@@ -151,7 +151,7 @@ function initialize(iter::ArnoldiIterator; verbosity::Int = 0)
     βold = norm(r)
     r = axpy!(-α, v, r)
     β = norm(r)
-    # possibly reorthogonalize 
+    # possibly reorthogonalize
     if iter.orth isa Union{ClassicalGramSchmidt2,ModifiedGramSchmidt2, CompensatedGramSchmidt2}
         dα = dot(v, r)
         α += dα
@@ -167,7 +167,7 @@ function initialize(iter::ArnoldiIterator; verbosity::Int = 0)
         end
     end
     if iter.orth isa Union{CompensatedGramSchmidt,CompensatedGramSchmidt2,CompensatedGramSchmidtIR}
-        V= ApproximateOrthonormalBasis([v],ones(T,1,1))
+        V = ApproximateOrthonormalBasis(OrthonormalBasis([v]),ones(T,1,1))
     else
         V = OrthonormalBasis([v])
     end

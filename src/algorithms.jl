@@ -66,7 +66,7 @@ struct ModifiedGramSchmidt2 <: Reorthogonalizer end
 Represents the compensated Gram Schmidt algorithm for inexact orthogonalizing different vectors,
 with a second reorthogonalization step always taking place.
 """
-struct CompensatedGramSchmidt <: Reorthogonalizer end
+struct CompensatedGramSchmidt2 <: Reorthogonalizer end
 
 # Iterative reorthogonalization
 """
