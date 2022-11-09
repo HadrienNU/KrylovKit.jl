@@ -23,7 +23,7 @@ Finally, a linear combination of the vectors in `b::ApproximateOrthonormalBasis`
 multiplying `b` with a `Vector{<:Number}` using `*` or `mul!` (if the output vector is
 already allocated).
 """
-mutable struct ApproximateOrthonormalBasis{T,S<:Number} <: Basis{T} # TODO: mutable or not ?
+mutable struct ApproximateOrthonormalBasis{T,S<:Number} <: Basis{T}
     basis::OrthonormalBasis{T}
     gram::Matrix{S} # The Gram matrix of the basis
 end
@@ -161,11 +161,8 @@ and are stored in `b`, so the old basis vectors are thrown away. Note that, by d
 the subspace spanned by these basis vectors is exactly the same.
 """
 function basistransform!(b::ApproximateOrthonormalBasis{T}, U::AbstractMatrix) where {T} # U should be unitary or isometric
-    #TODO : Transform Gram Matrix
-    #U*gram*UT
     b.gram = U'*b.gram*U
-    #Transform basis
-    basistransform!(b.basis, U)
+    basistransform!(b.basis, U) #Transform basis
     return b
 end
 
